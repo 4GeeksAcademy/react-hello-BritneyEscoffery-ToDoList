@@ -10,58 +10,71 @@ const createUser = () => {
 		method: "POST",
 		headers: {"content-type":"application/json"},
 		body: JSON.stringify({
-			"name": "britney-escoffery",
+			"name": "Britney",
   			"id": 0
 		})
 	}
-	fetch("https://playground.4geeks.com/todo/users/britney-escoffery", options)
+	fetch("https://playground.4geeks.com/todo/users/Britney", options)
 	.then((r)=>r.json())
 	.then((d)=> console.log("create-user-data", d))
+};
+
+const updatingToDo = () => {
+	const options = {
+		method: "PUT",
+		headers: {"content-type":"application/json"},
+		body: JSON.stringify({
+			"label": "Walk The Dog",
+  			"is_done": false
+		})
+	}
+	fetch(url + "todos/25", options)
+	.then((r) => r.json())
+	.then((d) => console.log("updated To Dos:", d)) 
+}
+
+const deleteToDo = (id) => {
+	const options = {
+		method: "DELETE",
+		headers: {"content-type":"application/json"},
+	}
+	fetch(url + "todos/" + id, options)
+	.then((r)=>r.json())
+	.then((d)=> console.log("deleted options:",d ))
 }
 
 const getAllUsers = () => {
 	fetch(url + "users")
 		.then(
 			(resp) => {
+				// console.log("getAllUsersResponse", resp.json()) cannot have 2 console logs
 				return resp.json()
 				
 			}
 		)
 		.then(
-			(data) => {console.log("dataUsers:", data)}
+			(data) => {console.log("get All Users Data:", data)}
 		)
 }
 
 
-const getToDos = () => {
-	fetch(url + "users/britney-escoffery")
-	.then((resp)=>{return resp.json()})
-	.then((data)=>{console.log("toDoData", data )})
-}
-
-const addToDo = () =>{
+const addToDo = (Label) =>{
 	let options = {
 		method:"POST",
 		headers:{"content-type":"application/json"},
 		body: JSON.stringify({
-			"label":"Wash the Car",
+			"label":Label,
 			"is_done":false
 		})
 	}
-		fetch(url + "todos/britney-escoffery", options)
+		fetch(url + "todos/Britney", options)
 		.then((resp)=>resp.json())
 		.then((data)=>console.log("addToDoData", data))
 }
 
 //create your first component
 const Home = () => {
-	useEffect(
-		() => {
-		addToDo()
-		getToDos()
-		createUser()
-		}, []
-	)
+	
 
 	const [inputValue, setInputValue] = useState('');
 	const [toDoList,setToDoList] = useState(["Clean Room", "Mop Kitchen", "Walk The Dog","Dust"]);
@@ -71,10 +84,25 @@ const Home = () => {
 	}
 	//                ^ function to save new tasks to list
 	
+	const getToDos = () => {
+	fetch(url + "users/Britney")
+	.then((resp)=>{return resp.json()})
+	.then((data)=>{setToDoList(data.todos)
+		console.log("data tag", data)
+	})
 	
+}
+
+	useEffect(
+		() => {
+			createUser()
+			getToDos()
+		// getAllUsers()
+		// addToDo() keeps adding new tasks onload
+		}, []
+	)
 	
 	const deleteInputValue = (item) => {
-
 		const filteredInputValues = toDoList.filter(
 			(inputData) => inputData != item
 	)
@@ -92,13 +120,13 @@ const Home = () => {
 					const newTask = e.target.value
 					setInputValue(newTask)
 			}
-
 			}
 				
 		 	onKeyDown = {
 				(e) => {
 			if (e.key == 'Enter') {
-				nextTask();
+				nextTask(toDoList);
+				addToDo(inputValue)
 			}					
 				} 
 			}
@@ -108,18 +136,28 @@ const Home = () => {
 		<button onClick={()=> nextTask()}>
 			Add task
 		</button>
+		<button onClick={()=> addToDo()}>
+			Add to API
+		</button>
+		<button onClick={()=> updatingToDo()}>
+			Update
+		</button>
+		<button onClick={()=> deleteToDo()}>
+			Delete
+		</button>
 
 		 <ul>
 			{/* <li>Take out the trash</li> */}
 			{toDoList.map(
 				(item, index)=> {
+					console.log("map item", item.id)
 					return(
 						<div>
-							<li key = {index + "chore"}>{item}</li>
+							<li key = {index + "chore"}>{item.label}</li>
 							<span class="text-danger" onClick={() => {
-								deleteInputValue(item)
+								deleteInputValue(item.id)
 		 					}}>
-									X
+									x
 							 </span>
 						</div>
 				)	

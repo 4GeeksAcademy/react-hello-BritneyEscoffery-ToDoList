@@ -3,9 +3,11 @@ body{
     font-family:Geneva, Tahoma, sans-serif;
 
 }
+
 h1{
     font-size:40px; 
 }
+
 .todo-container{
     background-color: pink;
     margin: 0 auto;
@@ -13,8 +15,8 @@ h1{
     box-shadow:0 2px 4px rgba(0,0,0,0.1),
     0 25px 50px; rgba(0, 0, 0, 0.1);
     border-radius: 4px;
-
 }
+
 .todo-container ul{
     list-style: none;
     margin: 0;
